@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="paneRefueling" prefHeight="793.0" prefWidth="1700.0" styleClass="pane_center" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.RefuelingPaneController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="200.0" spacing="50.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="163.0" spacing="10.0">
+               <children>
+                  <Label />
+                  <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#refuelingFrameOpen" prefHeight="31.0" prefWidth="211.0" styleClass="menu_button" text="Hozzáadás" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="173.0" prefWidth="163.0" spacing="10.0">
+               <children>
+                  <Label />
+                  <Button fx:id="btnFilterRefueling" mnemonicParsing="false" onAction="#filterRefueling" prefHeight="31.0" prefWidth="211.0" styleClass="menu_button" text="Szűrés" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <Label text="Jármű kiválasztás" />
+                  <ComboBox fx:id="cmbMachine" prefHeight="31.0" prefWidth="200.0" styleClass="combo-box" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <Label text="Év kiválasztás" />
+                  <ComboBox fx:id="cmbYear" prefHeight="31.0" prefWidth="200.0" styleClass="combo-box" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="163.0" prefWidth="231.0" spacing="10.0" visible="false">
+               <children>
+                  <Label text="Label" />
+                  <DatePicker />
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="50.0" />
+         </padding>
+      </HBox>
+      <TableView fx:id="tableRefueling" prefHeight="598.0" prefWidth="727.0" stylesheets="@../style.css">
+         <VBox.margin>
+            <Insets bottom="50.0" left="50.0" right="50.0" />
+         </VBox.margin>
+      </TableView>
+   </children>
+</VBox>

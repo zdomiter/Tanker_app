@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="pane_center" stylesheets="@style.css" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.RefuelingUpdateFrameController">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <DatePicker fx:id="dpDate" prefHeight="31.0" prefWidth="235.0" GridPane.columnIndex="1" />
+      <ComboBox fx:id="cmbMachine" onAction="#textChanged" prefHeight="31.0" prefWidth="229.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ComboBox fx:id="cmbTankCard" prefHeight="31.0" prefWidth="229.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="tfMileAge" onKeyReleased="#textChanged" onKeyTyped="#intTyped" promptText="csak számmal" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <TextField fx:id="tfQuantity" onKeyReleased="#textChanged" onKeyTyped="#doubleTyped" promptText="csak számmal" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <TextField fx:id="tfPrice" onKeyTyped="#doubleTyped" promptText="opcionális" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <TextField fx:id="tfNote" promptText="megjegyzés" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+      <Label text="Dátum:*" />
+      <Label text="Rendszám/Név:*" GridPane.rowIndex="1" />
+      <Label text="Tankolás helye:*" GridPane.rowIndex="2" />
+      <Label text="km/óra állás:" GridPane.rowIndex="3" />
+      <Label text="Mennyiség (liter):*" GridPane.rowIndex="4" />
+      <Label text="Üzemanyagár (Ft):" GridPane.rowIndex="6" />
+      <Label text="Összeg:" GridPane.rowIndex="7" />
+      <Label text="Megtett km:" GridPane.rowIndex="8" />
+      <Label fx:id="lblCalculateDistance" text="0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <Label text="Átlagfogyasztás (liter/100km):" GridPane.rowIndex="9" />
+      <Label fx:id="lblCalculateAverageFuelConsumption" text="0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <Label text="Megjegyzés:" GridPane.rowIndex="10" />
+      <Button fx:id="btnSave" mnemonicParsing="false" onAction="#updateRefueling" prefHeight="31.0" prefWidth="250.0" styleClass="menu_button" text="MENTÉS" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+      <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#close" prefHeight="31.0" prefWidth="235.0" styleClass="menu_button" text="MÉGSEM" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+      <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#deleteRefueling" prefHeight="31.0" prefWidth="239.0" style="-fx-text-fill: red;" styleClass="menu_button" text="TÖRLÉS" GridPane.rowIndex="13" />
+      <Label text="Teletankolva:" GridPane.rowIndex="11" />
+      <CheckBox fx:id="cbFull" mnemonicParsing="false" onAction="#textChanged" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+      <Label text="AdBlue (liter):" GridPane.rowIndex="5" />
+      <TextField fx:id="tfAdBlue" onKeyReleased="#textChanged" onKeyTyped="#doubleTyped" promptText="csak számmal" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Label fx:id="lblAmount" text="0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+   </children>
+   <padding>
+      <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+   </padding>
+</GridPane>

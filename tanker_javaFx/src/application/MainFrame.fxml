@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" prefHeight="900.0" prefWidth="1900.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MainFrameController">
+   <left>
+      <VBox alignment="TOP_CENTER" prefWidth="200.0" style="-fx-background-color: #1C414A;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="menuImageView" fitHeight="130.0" fitWidth="200.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="btnRefueling" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Tankolások">
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="btnMachine" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Járművek" />
+            <Button fx:id="btnTank" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Tartály" />
+            <Button fx:id="btnCompany" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Benzinkutak" />
+            <Button fx:id="btnStatement" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Kimutatások" />
+            <Label fx:id="lblTankQuantity" styleClass="menu_button" text="Label" />
+            <Label fx:id="lblTankPercentage" styleClass="menu_button" text="Label" />
+            <Button fx:id="btnTankLabel" mnemonicParsing="false" onAction="#tankLabel" text="Button" />
+            <Label fx:id="lblTankQuantityCheck" styleClass="menu_button" text="Label" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+   </left>
+   <top>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #122B31;" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+            <Label fx:id="lblHeader" style="-fx-text-fill: white;" text="Tankolások">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <VBox BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

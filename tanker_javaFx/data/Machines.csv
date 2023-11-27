@@ -1,0 +1,14 @@
+﻿id;licensePlate;startMileage;type;privateVehicle;hourlyConsumption;deleted;delDate
+1;ABC-858;525818;Mercedes-Benz Nyerges Vontató;0;0;0;null
+2;CBA-856;519363;Mercedes-Benz Nyerges Vontató;0;0;0;null
+3;AAA-866;619251;Mercedes-Benz 4 Tengelyes Billencs;0;0;0;null
+4;BBB-996;109020;Ford 4 tengelyes Billencs;0;0;0;null
+5;CCC-670;122529;Ford 4 tengelyes Billencs;0;0;0;null
+6;AAB-795;8670;Forgó-Kotró caterpillar;0;1;0;null
+7;AAC-593;146951;Opel Vivaro furgon;0;0;0;null
+8;Tesz Elek;0;Toyota;1;0;0;null
+9;Tóth Tamás;0;Mazda;1;0;0;null
+10;Gipsz Jakab;0;Ford;1;0;0;null
+11;Nagy Nándor;0;BMW;1;0;0;null
+12;PPP-533;116231;Opel Insignia;1;0;0;null
+13;Éliás Tóbiás;0;Opel Astra GTC 1.4;1;0;0;null
