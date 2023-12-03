@@ -10,7 +10,18 @@
 	-fx-background-color: #122B31;	
 }
 .pane_center{
-	-fx-background-color:  #D9F1F7;
+	-fx-background-color:  linear-gradient(to top, #529CDB, #6CBAE2);
+}
+/*
+.table-column {
+  -fx-alignment: CENTER-LEFT;
+}*/
+.table-view .table-column.integer-column .label,
+.table-view .table-column.integer-column,
+.table-view .table-column.double-column .label,
+.table-view .table-column.double-column{
+    -fx-alignment: CENTER-RIGHT;
+    -fx-padding: 0.166667em;
 }
 .table-view {
     -fx-background-color: transparent;
@@ -19,6 +30,7 @@
     -fx-background-color: #1C414A;
 }
 .table-view .column-header .label {
+	-fx-alignment: CENTER-LEFT;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-color: #1C414A;
@@ -99,4 +111,6 @@
   -fx-background-color : #5F9EA0; 
   -fx-text-fill: white;
 }
-
+.date-picker {
+    -fx-background-color: transparent;
+}

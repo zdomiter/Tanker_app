@@ -208,6 +208,7 @@ public class RefuelingUpdateFrameController implements Initializable {
 			Stage stage = (Stage) btnDelete.getScene().getWindow();
 			stage.close();
 			refuelingPaneController.fillTableData();
+			MainFrameController.setGaugeLevelValue();
 		}
 	}
 
@@ -235,6 +236,7 @@ public class RefuelingUpdateFrameController implements Initializable {
 				stage.close();
 				
 				refuelingPaneController.fillTableData();
+				MainFrameController.setGaugeLevelValue();
 			} catch (Exception e) {
 				alertMessage.wrongFormatAlert();
 			}

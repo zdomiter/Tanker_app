@@ -89,7 +89,7 @@ public class MachinePaneController implements Initializable {
 		}
 
 		idColumn.setCellValueFactory(cellData -> cellData.getValue().getId().asObject());
-
+		
 		licensePlateColumn.setCellValueFactory(cellData -> cellData.getValue().getLicensePlate());
 
 		typeColumn.setCellValueFactory(cellData -> cellData.getValue().getType());

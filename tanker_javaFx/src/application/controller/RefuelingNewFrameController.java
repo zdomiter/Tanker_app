@@ -216,6 +216,8 @@ public class RefuelingNewFrameController implements Initializable {
 				stage.close();
 				
 				refuelingPaneController.fillTableData();
+				MainFrameController.setGaugeLevelValue();
+				
 			} catch (Exception e) {
 				alertMessage.wrongFormatAlert();
 			}

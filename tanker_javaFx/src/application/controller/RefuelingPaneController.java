@@ -54,7 +54,7 @@ public class RefuelingPaneController implements Initializable {
 
 	@FXML
 	private TableView<TableData> tableRefueling;
-
+	
 	@FXML
 	void filterRefueling(ActionEvent event) {
 		fillTableData();

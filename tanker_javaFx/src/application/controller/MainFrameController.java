@@ -12,6 +12,8 @@ import application.entity.Tank;
 import application.entity.TankCard;
 import application.entity.TankReFill;
 import application.util.FileHandler;
+import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.skins.LevelSkin;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +24,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class MainFrameController implements Initializable {
 
@@ -30,6 +34,7 @@ public class MainFrameController implements Initializable {
 	private static List<Refueling> refuelings = new ArrayList<>();
 	private static List<TankReFill> tankReFills = new ArrayList<>();
 	private static Tank tank;
+	static Gauge gauge = new Gauge();
 
 	@FXML
 	private BorderPane root;
@@ -64,8 +69,8 @@ public class MainFrameController implements Initializable {
 	@FXML
 	private Label lblTankQuantityCheck;
 
-	@FXML
-	private Button btnTankLabel;
+    @FXML
+    private VBox vboxGauge;
 
 	public static List<Machine> getMachines() {
 		return machines;
@@ -92,7 +97,26 @@ public class MainFrameController implements Initializable {
 		readDataFromFile();
 		loadTank();
 		paneRefuelingInitialize();
-		tankLabel();
+		initializeGaugeLevel();
+		setGaugeLevelValue();
+	}
+
+	private void initializeGaugeLevel() {
+		gauge.setSkin(new LevelSkin(gauge));
+		gauge.setTitle((int)(tank.getQuantityLiter())+ " Liter");
+		gauge.setValue(tank.getCapacityPercentage());
+		gauge.setAnimated(true);
+		gauge.setValueColor(Color.FLORALWHITE);
+		gauge.setTitleColor(Color.FLORALWHITE);
+		gauge.setBarColor(Color.rgb(237, 155, 31));
+		vboxGauge.getChildren().add(gauge);
+		
+	}
+	
+	public static void setGaugeLevelValue() {
+		gauge.setValue(tank.getCapacityPercentage());
+		gauge.setTitle((int)(tank.getQuantityLiter())+ " Liter");
+		
 	}
 
 	public static void loadTank() {
@@ -110,33 +134,6 @@ public class MainFrameController implements Initializable {
 				refueling.setAmount();
 			}
 		}
-	}
-
-	private void loadTankCheck() {
-//		double amount = tankReFills.stream().filter(x -> !x.isDeleted())
-//				.mapToDouble(x -> x.getQuantity() * x.getPrice()).sum();
-		double allLoadQuantity = tankReFills.stream().filter(x -> !x.isDeleted()).mapToDouble(TankReFill::getQuantity)
-				.sum();
-//		double avgPrice = amount / allLoadQuantity;
-
-		double allRefuelQuantity = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x->x.getTankId()==1).mapToDouble(Refueling::getQuantity)
-				.sum();
-		double tankQauntityLiter = allLoadQuantity - allRefuelQuantity;
-
-		lblTankQuantityCheck.setText(tankQauntityLiter + "");
-	}
-
-	@FXML
-	void tankLabel() {
-		loadTankCheck();
-		setTankLabels();
-	}
-
-	public void setTankLabels() {
-		lblTankQuantity.setText(tank.getQuantityLiter() + "");
-		lblTankPercentage.setText(tank.getCapacityPercentage() + "");
-
 	}
 
 	@FXML

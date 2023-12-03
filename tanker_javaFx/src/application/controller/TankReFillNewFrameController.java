@@ -27,6 +27,7 @@ public class TankReFillNewFrameController implements Initializable {
 	private Tank tank;
 	private TankPaneController tankPaneController;
 	private AlertMessage alertMessage = new AlertMessage();
+	@SuppressWarnings("unused")
 	private DecimalFormat df = new DecimalFormat("#,###.##");
 
 	@FXML
@@ -74,6 +75,7 @@ public class TankReFillNewFrameController implements Initializable {
 				Stage stage = (Stage) btnSave.getScene().getWindow();
 				stage.close();
 				tankPaneController.fillTableTankData();
+				MainFrameController.setGaugeLevelValue();
 			} catch (Exception e) {
 				alertMessage.wrongFormatAlert();
 			}

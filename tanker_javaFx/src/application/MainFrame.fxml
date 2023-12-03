@@ -24,10 +24,10 @@
             <Button fx:id="btnTank" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Tartály" />
             <Button fx:id="btnCompany" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Benzinkutak" />
             <Button fx:id="btnStatement" mnemonicParsing="false" onAction="#handleClicks" prefHeight="50.0" prefWidth="200.0" styleClass="menu_button" text="Kimutatások" />
-            <Label fx:id="lblTankQuantity" styleClass="menu_button" text="Label" />
-            <Label fx:id="lblTankPercentage" styleClass="menu_button" text="Label" />
-            <Button fx:id="btnTankLabel" mnemonicParsing="false" onAction="#tankLabel" text="Button" />
-            <Label fx:id="lblTankQuantityCheck" styleClass="menu_button" text="Label" />
+            <VBox fx:id="vboxGauge" prefHeight="200.0" prefWidth="100.0">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="50.0" />
+               </padding></VBox>
          </children>
          <opaqueInsets>
             <Insets />

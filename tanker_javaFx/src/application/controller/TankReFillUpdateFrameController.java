@@ -94,6 +94,7 @@ public class TankReFillUpdateFrameController implements Initializable{
     		Stage stage = (Stage) btnDelete.getScene().getWindow();
 			stage.close();
 			tankPaneController.fillTableTankData();
+			MainFrameController.setGaugeLevelValue();
     	}
     }
 	private boolean checkTextFieldFilled() {
@@ -154,6 +155,7 @@ public class TankReFillUpdateFrameController implements Initializable{
 				Stage stage = (Stage) btnSave.getScene().getWindow();
 				stage.close();
 				tankPaneController.fillTableTankData();
+				MainFrameController.setGaugeLevelValue();
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
