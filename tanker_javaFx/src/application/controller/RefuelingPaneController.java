@@ -56,6 +56,46 @@ public class RefuelingPaneController implements Initializable {
 	private TableView<TableData> tableRefueling;
 	
 	@FXML
+    private TableColumn<TableData, Integer> idColumn;
+
+    @FXML
+    private TableColumn<TableData, LocalDate> dateColumn;
+
+    @FXML
+    private TableColumn<TableData, String> licensePlateColumn;
+
+    @FXML
+    private TableColumn<TableData, String> typeColumn;
+
+    @FXML
+    private TableColumn<TableData, String> companyColumn;
+
+    @FXML
+    private TableColumn<TableData, Double> quantityColumn;
+
+    @FXML
+    private TableColumn<TableData, Double> adBlueColumn;
+
+    @FXML
+    private TableColumn<TableData, Integer> amountColumn;
+
+    @FXML
+    private TableColumn<TableData, Integer> mileageColumn;
+
+    @FXML
+    private TableColumn<TableData, Integer> distanceColumn;
+
+    @FXML
+    private TableColumn<TableData, String> fullColumn;
+
+    @FXML
+    private TableColumn<TableData, String> avgFuelConsumptionColumn;
+
+    @FXML
+    private TableColumn<TableData, String> noteColumn;
+
+	
+	@FXML
 	void filterRefueling(ActionEvent event) {
 		fillTableData();
 	}
@@ -84,6 +124,7 @@ public class RefuelingPaneController implements Initializable {
 
 	@SuppressWarnings("unchecked")
 	public void fillTableData() {
+		df = new DecimalFormat("#,###.00");
 		tableRefueling.getColumns().clear();
 		tableRefueling.getItems().clear();
 
@@ -102,48 +143,35 @@ public class RefuelingPaneController implements Initializable {
 						tankCard != null ? tankCard.getCompany() : "", refueling.getQuantity(), refueling.getAmount(),
 						refueling.getMileage(), calculateDistance(refueling),
 						calculateAverageFuelConsumption(refueling),
-						(refueling.getNote()!="0")? refueling.getNote(): "",
+						(!refueling.getNote().equals("0"))? refueling.getNote(): "",
 						refueling.isFull() ? "Tele" : "Nincs tele", refueling.getAdBlue()));
 			}
 		}
-		TableColumn<TableData, Integer> idColumn = new TableColumn<>("Id");
 		idColumn.setCellValueFactory(cellData -> cellData.getValue().getId().asObject());
 		idColumn.setPrefWidth(0);
 
-		TableColumn<TableData, LocalDate> dateColumn = new TableColumn<>("Dátum");
 		dateColumn.setCellValueFactory(cellData -> cellData.getValue().getDate());
 
-		TableColumn<TableData, String> licensePlateColumn = new TableColumn<>("Rendszám/Név");
 		licensePlateColumn.setCellValueFactory(cellData -> cellData.getValue().getLicensePlate());
 
-		TableColumn<TableData, String> typeColumn = new TableColumn<>("Típus");
 		typeColumn.setCellValueFactory(cellData -> cellData.getValue().getType());
 
-		TableColumn<TableData, String> companyColumn = new TableColumn<>("Tartály/Kártya");
 		companyColumn.setCellValueFactory(cellData -> cellData.getValue().getCompany());
 
-		TableColumn<TableData, Double> quantityColumn = new TableColumn<>("Mennyiség");
 		quantityColumn.setCellValueFactory(cellData -> cellData.getValue().getQuantity().asObject());
 
-		TableColumn<TableData, Double> adBlueColumn = new TableColumn<>("AdBlue");
 		adBlueColumn.setCellValueFactory(cellData -> cellData.getValue().getAdBlue().asObject());
 
-		TableColumn<TableData, Integer> amountColumn = new TableColumn<>("Összeg");
 		amountColumn.setCellValueFactory(cellData -> cellData.getValue().getAmount().asObject());
 
-		TableColumn<TableData, Integer> mileageColumn = new TableColumn<>("Km/óra állás");
 		mileageColumn.setCellValueFactory(cellData -> cellData.getValue().getMileage().asObject());
 
-		TableColumn<TableData, Integer> distanceColumn = new TableColumn<>("Megtett km/óra");
 		distanceColumn.setCellValueFactory(cellData -> cellData.getValue().getDistance().asObject());
 
-		TableColumn<TableData, String> fullColumn = new TableColumn<>("Teletank");
 		fullColumn.setCellValueFactory(cellData -> cellData.getValue().getFull());
 
-		TableColumn<TableData, String> avgFuelConsumptionColumn = new TableColumn<>("Átlagfogyasztás");
 		avgFuelConsumptionColumn.setCellValueFactory(cellData -> cellData.getValue().getAvgFuelConsumption());
 
-		TableColumn<TableData, String> noteColumn = new TableColumn<>("Megjegyzés");
 		noteColumn.setCellValueFactory(cellData -> cellData.getValue().getNote());
 
 		tableRefueling.getColumns().addAll(idColumn, dateColumn, licensePlateColumn, typeColumn, companyColumn,
@@ -235,7 +263,7 @@ public class RefuelingPaneController implements Initializable {
 	void refuelingFrameOpen(ActionEvent event) {
 		Stage newRefuelingStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../RefuelingNewFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/RefuelingNewFrame.fxml"));
 			GridPane root = loader.load();
 			RefuelingNewFrameController controller = loader.getController();
 			controller.setRefuelingPaneController(this);
@@ -254,7 +282,7 @@ public class RefuelingPaneController implements Initializable {
 	public void openRefuelingUpdateFrame(int id) {
 		Stage refuelingUpdateStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../RefuelingUpdateFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/RefuelingUpdateFrame.fxml"));
 			GridPane root = loader.load();
 			RefuelingUpdateFrameController controller = loader.getController();
 			controller.setRefuelingId(id);

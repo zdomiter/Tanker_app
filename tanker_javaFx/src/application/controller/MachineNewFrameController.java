@@ -21,6 +21,7 @@ public class MachineNewFrameController implements Initializable{
 
 	private List<Machine> machines;
 	private AlertMessage alertMessage = new AlertMessage();
+	private MachinePaneController machinePaneController;
     @FXML
     private TextField tfLicensePlate;
 
@@ -91,9 +92,8 @@ public class MachineNewFrameController implements Initializable{
 			fhObj.writeMachinesToFile(machines);
 			Stage stage = (Stage) btnSave.getScene().getWindow();
 			stage.close();
+			machinePaneController.fillTableMachineData();
 		}
-    	
-    	
     }
 
 	private boolean filledAllTextField() {
@@ -106,6 +106,11 @@ public class MachineNewFrameController implements Initializable{
 			alertMessage.emptyStartMileageTextFieldAlert();
 		}
 		return filled;
+	}
+
+	public void setMachinePaneController(MachinePaneController controller) {
+		this.machinePaneController = controller;
+		
 	}
 
 

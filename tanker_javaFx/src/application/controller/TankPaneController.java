@@ -60,7 +60,7 @@ public class TankPaneController  implements Initializable {
     void tankFrameOpen(ActionEvent event) {
     	Stage newTankReFillStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../TankReFillNewFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/TankReFillNewFrame.fxml"));
 			GridPane root = loader.load();
 			TankReFillNewFrameController controller = loader.getController();
 			controller.setTankPaneController(this);
@@ -103,7 +103,8 @@ public class TankPaneController  implements Initializable {
 		for (TankReFill tankReFill : tankReFills) {
 			if (!tankReFill.isDeleted()) {
 				data.add(new TableTankData(tankReFill.getId(), tankReFill.getDate(), tankReFill.getQuantity(),
-						tankReFill.getPrice(), tankReFill.getCompany(), tankReFill.getNote()));
+						tankReFill.getPrice(), tankReFill.getCompany(),
+						!tankReFill.getNote().equals("0")?tankReFill.getNote():""));
 			}
 		}
 
@@ -130,7 +131,7 @@ public class TankPaneController  implements Initializable {
 	private void openTankUpdateFrame(int id) {
 		Stage tankReFillUpdateStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../TankReFillUpdateFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/TankReFillUpdateFrame.fxml"));
 			GridPane root = loader.load();
 			TankReFillUpdateFrameController controller = loader.getController();
 			controller.setTankReFillId(id);

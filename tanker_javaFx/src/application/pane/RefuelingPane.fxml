@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -52,6 +53,21 @@
 			<VBox.margin>
 				<Insets bottom="50.0" left="50.0" right="50.0" />
 			</VBox.margin>
+         <columns>
+            <TableColumn fx:id="idColumn" prefWidth="75.0" text="id" visible="false" />
+            <TableColumn fx:id="dateColumn" prefWidth="99.00003051757812" text="Dátum" />
+            <TableColumn fx:id="licensePlateColumn" prefWidth="135.0" text="Rendszám/Név" />
+            <TableColumn fx:id="typeColumn" prefWidth="258.0" text="Típus" />
+            <TableColumn fx:id="companyColumn" minWidth="3.0" prefWidth="94.0" text="Tartály/Kártya" />
+            <TableColumn fx:id="quantityColumn" prefWidth="108.0" styleClass="double-column" text="Mennyiség" />
+            <TableColumn fx:id="adBlueColumn" prefWidth="91.0" styleClass="double-column" text="AdBlue" />
+            <TableColumn fx:id="amountColumn" prefWidth="94.0" styleClass="double-column" text="Összeg" />
+            <TableColumn fx:id="mileageColumn" prefWidth="132.0" styleClass="double-column" text="Km/óra állás" />
+            <TableColumn fx:id="distanceColumn" prefWidth="126.0" styleClass="double-column" text="Megtett km/óra" />
+            <TableColumn fx:id="fullColumn" prefWidth="94.0" text="Teletank" />
+            <TableColumn fx:id="avgFuelConsumptionColumn" prefWidth="73.0" styleClass="double-column" text="Átlagfogyasztás" />
+            <TableColumn fx:id="noteColumn" prefWidth="296.0" text="Megjegyzés" />
+         </columns>
 		</TableView>
 	</children>
 </VBox>

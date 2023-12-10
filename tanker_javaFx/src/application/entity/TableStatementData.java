@@ -17,10 +17,12 @@ public class TableStatementData {
     private final DoubleProperty refuelQuantity;
     private final IntegerProperty distance;
     private final DoubleProperty averageConsumption;
+    private final StringProperty amountColumn;
+    
 
     
 	public TableStatementData(int id, String licensePlate, String type, String privateVehicle, 
-			String hourlyConsumption, double refuelQuantity, int distance, double averageConsumption) {
+			String hourlyConsumption, double refuelQuantity, int distance, double averageConsumption, String amountColumn) {
 		this.id = new SimpleIntegerProperty(id);
 		this.licensePlate = new SimpleStringProperty(licensePlate);
 		this.type = new SimpleStringProperty(type);
@@ -29,6 +31,7 @@ public class TableStatementData {
 		this.refuelQuantity = new SimpleDoubleProperty(refuelQuantity);
 		this.distance = new SimpleIntegerProperty(distance);
 		this.averageConsumption = new SimpleDoubleProperty(averageConsumption);
+		this.amountColumn = new SimpleStringProperty(amountColumn);
 	}
 
 
@@ -72,4 +75,9 @@ public class TableStatementData {
 	}
 
 
+	public StringProperty getAmountColumn() {
+		return amountColumn;
+	}
+
+	
 }

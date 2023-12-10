@@ -78,6 +78,9 @@ public class RefuelingNewFrameController implements Initializable {
 	private Label lblCalculateDistance;
 
 	@FXML
+	private Label lblMileage;
+
+	@FXML
 	private DatePicker dpDate;
 
 	@FXML
@@ -105,7 +108,7 @@ public class RefuelingNewFrameController implements Initializable {
 		if (cmbTankCard.getValue().equals("Tartály")) {
 			tfPrice.setText(df.format(tank.getPrice()));
 			tfPrice.setEditable(false);
-		}else {
+		} else {
 			tfPrice.setEditable(true);
 		}
 
@@ -136,6 +139,19 @@ public class RefuelingNewFrameController implements Initializable {
 		calculateAverageFuelConsumption();
 		setPriceLabelText();
 		setAmountLabelText();
+		configureLabelsForPrivateVehicle();
+	}
+
+	private void configureLabelsForPrivateVehicle() {
+		if (!cmbMachine.getValue().equals("Válassz!")) {
+			if (srcUtilObj.isPrivateVehicleByLicencePlate(machines, cmbMachine.getValue())) {
+				lblMileage.setText("km/óra állás:");
+				tfMileAge.setPromptText("Nem kötelező");
+			} else {
+				lblMileage.setText("km/óra állás:*");
+				tfMileAge.setPromptText("csak számmal");
+			}
+		}
 	}
 
 	private void setAmountLabelText() {
@@ -143,7 +159,7 @@ public class RefuelingNewFrameController implements Initializable {
 			double price = doubleNumberFormater(tfPrice.getText());
 			double quantity = doubleNumberFormater(tfQuantity.getText());
 			if (price > 0 && quantity > 0) {
-				lblAmount.setText(df.format((int)price*quantity) + " Ft");
+				lblAmount.setText(df.format((int) price * quantity) + " Ft");
 			}
 		}
 	}
@@ -198,26 +214,27 @@ public class RefuelingNewFrameController implements Initializable {
 				int tankCardId = srcUtilObj.getTankCardIdByCompany(tankCards, cmbTankCard.getValue());
 				double price = tfPrice.getText().isEmpty() ? 0.0 : doubleNumberFormater(tfPrice.getText());
 				double adBlue = tfAdBlue.getText().isEmpty() ? 0.0 : doubleNumberFormater(tfAdBlue.getText());
+				int mileage = tfMileAge.getText().isEmpty() ? 0 : Integer.parseInt(tfMileAge.getText());
 				double quantity = doubleNumberFormater(tfQuantity.getText());
 
 				if (cmbTankCard.getValue().equals("Tartály")) {
 					price = tank.refuelFromTank(doubleNumberFormater(tfQuantity.getText()));
 				}
 				int amount = (int) (price * quantity);
-				
-				refuelings.add(new Refueling(refuelings.size() + 1, dpDate.getValue(), machineId, tankCardId,
-						quantity, amount, Integer.parseInt(tfMileAge.getText()),
-						price, stringFormatter(tfNote.getText()), cbFull.isSelected(), adBlue, false, null));
-				
+
+				refuelings.add(new Refueling(refuelings.size() + 1, dpDate.getValue(), machineId, tankCardId, quantity,
+						amount, mileage, price, stringFormatter(tfNote.getText()),
+						cbFull.isSelected(), adBlue, false, null));
+
 				FileHandler fhObj = new FileHandler();
 				fhObj.writeRefuelingsToFile(refuelings);
-				
+
 				Stage stage = (Stage) btnSave.getScene().getWindow();
 				stage.close();
-				
+
 				refuelingPaneController.fillTableData();
 				MainFrameController.setGaugeLevelValue();
-				
+
 			} catch (Exception e) {
 				alertMessage.wrongFormatAlert();
 			}
@@ -233,7 +250,13 @@ public class RefuelingNewFrameController implements Initializable {
 		if (dpDate.getValue() == null) {
 			filled = false;
 		}
-		if (cmbMachine.getValue().equals("Válassz!")) {
+		if (!cmbMachine.getValue().equals("Válassz!")) {
+			if (!srcUtilObj.isPrivateVehicleByLicencePlate(machines, cmbMachine.getValue())) {
+				if (tfMileAge.getText().isEmpty() || doubleNumberFormater(tfMileAge.getText()) <= 0) {
+					filled = false;
+				}
+			}
+		}else {
 			filled = false;
 		}
 		if (tfQuantity.getText().isEmpty() || doubleNumberFormater(tfQuantity.getText()) <= 0) {

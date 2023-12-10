@@ -67,8 +67,8 @@ public class TankReFillNewFrameController implements Initializable {
 			try {
 				tankReFills.add(new TankReFill(tankReFills.size() + 1,
 						dpDate.getValue(), doubleNumberFormater(tfQuantity.getText()),
-						doubleNumberFormater(tfPrice.getText()), stringFormatter(tfCompany.getText()),
-						stringFormatter(tfNote.getText()), false, null));
+						doubleNumberFormater(tfPrice.getText()), tfCompany.getText(),
+						tfNote.getText(), false, null));
 				FileHandler fhObj = new FileHandler();
 				fhObj.writeTankReFillsToFile(tankReFills);
 				tank.fillTank(doubleNumberFormater(tfQuantity.getText()), doubleNumberFormater(tfPrice.getText()));
@@ -89,13 +89,13 @@ public class TankReFillNewFrameController implements Initializable {
 		if (tfQuantity.getText().isEmpty() || doubleNumberFormater(tfQuantity.getText())<=0) {
 			filled = false;
 		}
+		if (tfCompany.getText().isEmpty()) {
+			filled = false;
+		}
 		if (!filled) {
 			alertMessage.emptyTextFieldAlert();
 		}
 		return filled;
-	}
-	private String stringFormatter(String text) {
-		return text.equals("") ? "0" : text;
 	}
 	
 	private double doubleNumberFormater(String numberStr) {

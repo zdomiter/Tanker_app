@@ -37,8 +37,8 @@
          <columns>
             <TableColumn fx:id="idColumn" minWidth="0.0" prefWidth="0.0" text="id" visible="false" />
             <TableColumn fx:id="dateColumn" prefWidth="210.0" text="Dátum" />
-            <TableColumn fx:id="quantityColumn" minWidth="0.0" prefWidth="200.0" text="Betöltött mennyiség" />
-            <TableColumn fx:id="priceColumn" minWidth="0.0" prefWidth="200.0" text="Gázolaj ára" />
+            <TableColumn fx:id="quantityColumn" minWidth="0.0" prefWidth="200.0" styleClass="double-column" text="Betöltött mennyiség" />
+            <TableColumn fx:id="priceColumn" minWidth="0.0" prefWidth="200.0" styleClass="double-column" text="Gázolaj ára" />
             <TableColumn fx:id="companyColumn" minWidth="0.0" prefWidth="300.0" text="Cégnév" />
             <TableColumn fx:id="noteColumn" prefWidth="425.0" text="Megjegyzés" />
          </columns>

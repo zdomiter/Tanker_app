@@ -46,7 +46,10 @@ public class CompanyPaneController implements Initializable {
 	void companyNewFrameOpen(ActionEvent event) {
 		Stage newCompanyStage = new Stage();
 		try {
-			GridPane root = (GridPane) FXMLLoader.load(getClass().getResource("../CompanyNewFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/CompanyNewFrame.fxml"));
+			GridPane root = loader.load();
+			CompanyNewFrameController controller = loader.getController();
+			controller.setCompanyPaneController(this);
 			Scene scene = new Scene(root, 600, 400);
 			newCompanyStage.setScene(scene);
 			newCompanyStage.setTitle("Üzemanyagtársaság hozzáadása");
@@ -69,8 +72,9 @@ public class CompanyPaneController implements Initializable {
 				if (event.getClickCount() == 2 && !row.isEmpty()) {
 					TableCompanyData rowData = row.getItem();
 					IntegerProperty selectedId = rowData.getId();
-					openCompanyUpdateFrame(selectedId.getValue().intValue());
-
+					if (selectedId.getValue().intValue()!=1) {
+						openCompanyUpdateFrame(selectedId.getValue().intValue());
+					}
 				}
 			});
 			return row;
@@ -81,7 +85,7 @@ public class CompanyPaneController implements Initializable {
 	private void openCompanyUpdateFrame(int id) {
 		Stage companyUpdateStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../CompanyUpdateFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/CompanyUpdateFrame.fxml"));
 			GridPane root = loader.load();
 			CompanyUpdateFrameController controller = loader.getController();
 			controller.setCompanyId(id);

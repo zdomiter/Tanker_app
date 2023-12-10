@@ -111,7 +111,10 @@ public class MachinePaneController implements Initializable {
 	void machineFrameOpen(ActionEvent event) {
 		Stage newMachineStage = new Stage();
 		try {
-			GridPane root = (GridPane) FXMLLoader.load(getClass().getResource("../MachineNewFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/MachineNewFrame.fxml"));
+			GridPane root = loader.load();
+			MachineNewFrameController controller = loader.getController();
+			controller.setMachinePaneController(this);
 			Scene scene = new Scene(root, 600, 400);
 			newMachineStage.setScene(scene);
 			newMachineStage.setTitle("Jármű hozzáadása");
@@ -127,7 +130,7 @@ public class MachinePaneController implements Initializable {
 	public void openMachineUpdateFrame(int id) {
 		Stage machineUpdateStage = new Stage();
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../MachineUpdateFrame.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../frame/MachineUpdateFrame.fxml"));
 			GridPane root = loader.load();
 			MachineUpdateFrameController controller = loader.getController();
 			controller.setMachineId(id);

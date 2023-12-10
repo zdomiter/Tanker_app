@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import application.entity.Machine;
@@ -12,25 +13,47 @@ import application.entity.Refueling;
 import application.entity.TableStatementData;
 import application.entity.Tank;
 import application.entity.TankReFill;
+import application.util.ChartTankStatement;
+import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.Gauge.KnobType;
+import eu.hansolo.medusa.Gauge.LedType;
+import eu.hansolo.medusa.Gauge.NeedleShape;
+import eu.hansolo.medusa.Gauge.NeedleSize;
+import eu.hansolo.medusa.Gauge.ScaleDirection;
+import eu.hansolo.medusa.Gauge.SkinType;
+import eu.hansolo.medusa.GaugeBuilder;
+import eu.hansolo.medusa.LcdDesign;
+import eu.hansolo.medusa.LcdFont;
+import eu.hansolo.medusa.TickLabelLocation;
+import eu.hansolo.medusa.TickLabelOrientation;
+import eu.hansolo.medusa.TickMarkType;
+import eu.hansolo.medusa.skins.LevelSkin;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class StatementPaneController implements Initializable {
 
 	private List<Machine> machines;
 	private List<TankReFill> tankReFills;
 	private List<Refueling> refuelings;
-	private DecimalFormat df = new DecimalFormat("#,###.00");
-	
+	private DecimalFormat df = new DecimalFormat("#,##0.00");
+	private static Tank tank;
+	private Gauge gaugeStart;
+	private Gauge gaugeEnd;
+
 	@FXML
 	private VBox paneStatement;
 
@@ -60,6 +83,18 @@ public class StatementPaneController implements Initializable {
 
 	@FXML
 	private Label lblCurrentQuantity;
+	
+    @FXML
+    private Label lblAdBlue;
+    
+    @FXML
+    private VBox vBoxDashboardStart;
+    
+    @FXML
+    private VBox vBoxDashboardEnd;
+
+	@FXML
+	private LineChart<String, Number> chartTank;
 
 	@FXML
 	private TableView<TableStatementData> tableStatement;
@@ -87,12 +122,18 @@ public class StatementPaneController implements Initializable {
 
 	@FXML
 	private TableColumn<TableStatementData, Double> averageConsumptionColumn;
+	
+	@FXML
+	private TableColumn<TableStatementData, String> amountColumn;
 
 	@FXML
 	void LoadStatement(ActionEvent event) {
 		fillTableStatementDate();
 		calculateStatementDatas();
+		setChartTankLevel();
+		setDasboardSkins();
 	}
+
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -102,8 +143,11 @@ public class StatementPaneController implements Initializable {
 		setDatePickers();
 		calculateStatementDatas();
 		fillTableStatementDate();
-	}
+		setChartTankLevel();
+		createDasboardSkins();
+		setDasboardSkins();
 
+	}
 
 
 	@SuppressWarnings("unchecked")
@@ -118,8 +162,9 @@ public class StatementPaneController implements Initializable {
 				int id = machine.getId();
 				data.add(new TableStatementData(id, machine.getLicensePlate(), machine.getType(),
 						machine.isPrivateVehicle() ? "magán" : "céges",
-						machine.isHourlyConsumption() ? "üzemóra" : "km", calculateRefuelQuantity(id), calculateDistance(id),
-						calculateAverageConsumption(id, machine.isHourlyConsumption())));
+						machine.isHourlyConsumption() ? "üzemóra" : "km", calculateRefuelQuantity(id),
+						calculateDistance(id), calculateAverageConsumption(id, machine.isHourlyConsumption()),
+						df.format(calculateAmount(id))+" Ft"));
 			}
 		}
 
@@ -132,29 +177,40 @@ public class StatementPaneController implements Initializable {
 		privateVehicleColumn.setCellValueFactory(cellData -> cellData.getValue().isPrivateVehicle());
 
 		hourlyConsumptionColumn.setCellValueFactory(cellData -> cellData.getValue().isHourlyConsumption());
-		
+
 		refuelQuantityColumn.setCellValueFactory(cellData -> cellData.getValue().getRefuelQuantity().asObject());
-		
+
 		distanceColumn.setCellValueFactory(cellData -> cellData.getValue().getDistance().asObject());
 
-		averageConsumptionColumn.setCellValueFactory(cellData -> cellData.getValue().getAverageConsumption().asObject());
+		averageConsumptionColumn
+				.setCellValueFactory(cellData -> cellData.getValue().getAverageConsumption().asObject());
 		
+		amountColumn.setCellValueFactory(cellData -> cellData.getValue().getAmountColumn());
+
 		tableStatement.getColumns().addAll(idColumn, licensePlateColumn, typeColumn, privateVehicleColumn,
-				hourlyConsumptionColumn, refuelQuantityColumn, distanceColumn, averageConsumptionColumn);
-		
+				hourlyConsumptionColumn, refuelQuantityColumn, distanceColumn, averageConsumptionColumn, amountColumn);
+
 		tableStatement.setItems(data);
+	}
+
+	private double calculateAmount(int id) {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		return refuelings.stream().filter(x -> !x.isDeleted()).filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
+				.mapToDouble(Refueling::getAmount).sum();
 	}
 
 	private double calculateAverageConsumption(int id, boolean isHourlyConsumption) {
 		double quantity = calculateRefuelQuantity(id);
 		int distance = calculateDistance(id);
-		if (distance!=0) {
-			double avg = quantity/distance;
+		if (distance != 0) {
+			double avg = quantity / distance;
 			if (!isHourlyConsumption) {
 				avg = avg * 100;
-			}			
-			return (double)(Math.round(avg*100))/100;
-		}else {
+			}
+			return (double) (Math.round(avg * 100)) / 100;
+		} else {
 			return 0;
 		}
 	}
@@ -163,14 +219,12 @@ public class StatementPaneController implements Initializable {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
 		int startMileage = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x ->x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x ->x.getDate().isBefore(endDate.plusDays(1)))
-				.filter(x ->x.getMachineId()==id)
+				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
 				.mapToInt(Refueling::getMileage).min().orElse(0);
 		int endMileage = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x ->x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x ->x.getDate().isBefore(endDate.plusDays(1)))
-				.filter(x ->x.getMachineId()==id)
+				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
 				.mapToInt(Refueling::getMileage).max().orElse(0);
 		return endMileage - startMileage;
 	}
@@ -178,10 +232,8 @@ public class StatementPaneController implements Initializable {
 	private double calculateRefuelQuantity(int id) {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
-		return refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x ->x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x ->x.getDate().isBefore(endDate.plusDays(1)))
-				.filter(x ->x.getMachineId()==id)
+		return refuelings.stream().filter(x -> !x.isDeleted()).filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
 				.mapToDouble(Refueling::getQuantity).sum();
 	}
 
@@ -190,81 +242,139 @@ public class StatementPaneController implements Initializable {
 
 		LocalDate firstDayOfPreviousMonth = currentDate.minusMonths(1).withDayOfMonth(1);
 		dpStartDate.setValue(firstDayOfPreviousMonth);
-		
-    	LocalDate lastDayOfPreviousMonth = YearMonth.from(dpStartDate.getValue()).atEndOfMonth();
-		dpEndDate.setValue(lastDayOfPreviousMonth);
 
+		LocalDate lastDayOfPreviousMonth = YearMonth.from(dpStartDate.getValue()).atEndOfMonth();
+		dpEndDate.setValue(lastDayOfPreviousMonth);
 	}
-	
 
-    @FXML
-    private void setDpEndValue(ActionEvent event) {
-    	LocalDate lastDayOfPreviousMonth = YearMonth.from(dpStartDate.getValue()).atEndOfMonth();
+	@FXML
+	private void setDpEndValue(ActionEvent event) {
+		LocalDate lastDayOfPreviousMonth = YearMonth.from(dpStartDate.getValue()).atEndOfMonth();
 		dpEndDate.setValue(lastDayOfPreviousMonth);
-    }
-    
+	}
+
 	private void calculateStatementDatas() {
-		lblOpenQuantity.setText(df.format(getTankStartLevel())+" liter");
-		lblSumTankFill.setText(df.format(getTankReFills())+" liter");
-		lblSumRefuelings.setText(df.format(getAllRefuelins())+" liter");
-		lblCloseQuantity.setText(df.format(getTankEndLevel())+" liter");
-		lblChangeQuantity.setText(df.format(getTankChange())+" liter");
-		
+		lblOpenQuantity.setText(df.format(getTankStartLevel()) + " liter");
+		lblSumTankFill.setText(df.format(getTankReFills()) + " liter");
+		lblSumRefuelings.setText(df.format(getAllRefuelins()) + " liter");
+		lblCloseQuantity.setText(df.format(getTankEndLevel()) + " liter");
+		lblChangeQuantity.setText(df.format(getTankChange()) + " liter");
+
 		Tank tank = MainFrameController.getTank();
-		lblCurrentQuantity.setText(df.format(tank.getQuantityLiter())+" liter");
+		lblCurrentQuantity.setText(df.format(tank.getQuantityLiter()) + " liter");
+		lblAdBlue.setText(df.format(getAllAdBlueQauntity()) + " liter");
 	}
-    
 
-
+	private double getAllAdBlueQauntity() {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		return refuelings.stream().filter(x -> !x.isDeleted())
+				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(Refueling::getAdBlue).sum();
+	}
 
 	private double getTankStartLevel() {
-    	LocalDate startDate = dpStartDate.getValue();
-		double level = tankReFills.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getDate().isBefore(startDate))
+		LocalDate startDate = dpStartDate.getValue();
+		double level = tankReFills.stream().filter(x -> !x.isDeleted()).filter(x -> x.getDate().isBefore(startDate))
 				.mapToDouble(TankReFill::getQuantity).sum();
-		double refuels = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getTankId()==1)
-				.filter(x -> x.getDate().isBefore(startDate))
-				.mapToDouble(Refueling::getQuantity).sum();
+		double refuels = refuelings.stream().filter(x -> !x.isDeleted()).filter(x -> x.getTankId() == 1)
+				.filter(x -> x.getDate().isBefore(startDate)).mapToDouble(Refueling::getQuantity).sum();
 		level -= refuels;
 		return level;
 	}
-    
+
 	private double getTankReFills() {
 		LocalDate startDate = dpStartDate.getValue();
-    	LocalDate endDate = dpEndDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
 		double level = tankReFills.stream().filter(x -> !x.isDeleted())
 				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
-				.mapToDouble(TankReFill::getQuantity).sum();
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(TankReFill::getQuantity).sum();
 		return level;
 	}
-	
-    private double getAllRefuelins() {
-    	LocalDate startDate = dpStartDate.getValue();
-    	LocalDate endDate = dpEndDate.getValue();
-    	double refuels = refuelings.stream().filter(x -> !x.isDeleted())
+
+	private double getAllRefuelins() {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		double refuels = refuelings.stream().filter(x -> !x.isDeleted())
 				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
-				.mapToDouble(Refueling::getQuantity).sum();
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(Refueling::getQuantity).sum();
 		return refuels;
 	}
-    
+
 	private double getTankEndLevel() {
 		LocalDate endDate = dpEndDate.getValue();
 		double level = tankReFills.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
-				.mapToDouble(TankReFill::getQuantity).sum();
-		double refuels = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getTankId()==1)
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
-				.mapToDouble(Refueling::getQuantity).sum();
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(TankReFill::getQuantity).sum();
+		double refuels = refuelings.stream().filter(x -> !x.isDeleted()).filter(x -> x.getTankId() == 1)
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(Refueling::getQuantity).sum();
 		level -= refuels;
 		return level;
 	}
-	
 
 	private double getTankChange() {
-		return getTankEndLevel()-getTankStartLevel();
+		return getTankEndLevel() - getTankStartLevel();
+	}
+
+	private void setChartTankLevel() {
+		try {
+			chartTank.getData().clear();
+			LocalDate startDate = dpStartDate.getValue();
+			LocalDate endDate = dpEndDate.getValue();
+			Map<LocalDate, Double> tankLevels = new ChartTankStatement(startDate, endDate).getTankLevelsForChart();
+			
+
+			XYChart.Series<String, Number> series = new XYChart.Series<>();
+			series.setName("Tank");
+
+			for (Map.Entry<LocalDate, Double> entry : tankLevels.entrySet()) {
+				String day =  (entry.getKey()+"").replace("-", "").substring(2, 8);
+				series.getData().add(new XYChart.Data<>(day, entry.getValue()));
+			}
+
+			chartTank.getData().add(series);
+		} catch (Exception e) {
+			System.out.println(e);
+		}		
+	}
+	
+
+	private void createDasboardSkins() {
+		gaugeStart = GaugeBuilder.create()
+			                  .skinType(SkinType.DASHBOARD)
+			                  .prefSize(150,150)
+			                  .barColor(Color.rgb(243, 98, 45))
+			                  .title("")
+			                  .unit("liter")
+			                  .unitColor(Color.BLACK)
+			                  .valueColor(Color.BLACK)
+			                  .decimals(0)
+			                  .minValue(0)
+			                  .maxValue(1200)
+			                  .animated(true)
+			                  .animationDuration(500)
+			                  .build();
+		vBoxDashboardStart.getChildren().add(gaugeStart);
+		
+		gaugeEnd = GaugeBuilder.create()
+                .skinType(SkinType.DASHBOARD)
+                .prefSize(150,150)
+                .barColor(Color.rgb(243, 98, 45))
+                .title("")
+                .unit("liter")
+                .unitColor(Color.BLACK)
+                .valueColor(Color.BLACK)
+                .decimals(0)
+                .minValue(0)
+                .maxValue(1200)
+                .animated(true)
+                .animationDuration(500)
+                .build();
+		vBoxDashboardEnd.getChildren().add(gaugeEnd);
+	}
+
+	
+	private void setDasboardSkins() {
+			gaugeStart.setValue(getTankStartLevel());
+			gaugeEnd.setValue(getTankEndLevel());
 	}
 }

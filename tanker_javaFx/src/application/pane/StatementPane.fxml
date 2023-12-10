@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -15,20 +18,36 @@
 
 <VBox fx:id="paneStatement" prefHeight="793.0" prefWidth="1700.0" styleClass="pane_center" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.StatementPaneController">
    <children>
-      <HBox prefHeight="226.0" prefWidth="1600.0">
+      <HBox prefHeight="250.0" prefWidth="1600.0">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="121.0" prefWidth="1400.0" spacing="50.0">
                <children>
-                  <VBox alignment="CENTER" prefHeight="226.0" prefWidth="150.0" spacing="10.0">
+                  <VBox alignment="CENTER" prefHeight="226.0" prefWidth="150.0">
                      <children>
+                        <VBox fx:id="vBoxDashboardStart" prefHeight="200.0" prefWidth="100.0">
+                           <padding>
+                              <Insets top="30.0" />
+                           </padding>
+                        </VBox>
                         <Label text="Nyitás" />
-                        <DatePicker fx:id="dpStartDate" onAction="#setDpEndValue" />
+                        <DatePicker fx:id="dpStartDate" onAction="#setDpEndValue">
+                           <padding>
+                              <Insets bottom="50.0" />
+                           </padding></DatePicker>
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" layoutX="223.0" layoutY="10.0" prefHeight="163.0" prefWidth="150.0" spacing="10.0">
+                  <VBox alignment="CENTER" layoutX="223.0" layoutY="10.0" prefHeight="163.0" prefWidth="150.0">
                      <children>
+                        <VBox fx:id="vBoxDashboardEnd" prefHeight="200.0" prefWidth="100.0">
+                           <padding>
+                              <Insets top="30.0" />
+                           </padding>
+                        </VBox>
                         <Label text="Zárás" />
-                        <DatePicker fx:id="dpEndDate" />
+                        <DatePicker fx:id="dpEndDate">
+                           <padding>
+                              <Insets bottom="50.0" />
+                           </padding></DatePicker>
                      </children>
                   </VBox>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="163.0" spacing="10.0">
@@ -56,6 +75,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <Label text="Nyitó mennyiség" />
@@ -64,7 +84,7 @@
                         <Label text="Mennyiség változása a hónapban" GridPane.rowIndex="3" />
                         <Label text="Záró mennyiség" GridPane.rowIndex="4" />
                         <Label text="Aktuális mennyiség a tartályban" GridPane.rowIndex="5" />
-                        <Label fx:id="lblOpenQuantity" text="0" GridPane.columnIndex="1">
+                        <Label fx:id="lblOpenQuantity" style="-fx-text-fill: white;" text="0" GridPane.columnIndex="1">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
@@ -84,7 +104,7 @@
                               <Font name="System Bold" size="15.0" />
                            </font>
                         </Label>
-                        <Label fx:id="lblCloseQuantity" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <Label fx:id="lblCloseQuantity" style="-fx-text-fill: white;" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
@@ -94,8 +114,22 @@
                               <Font name="System Bold" size="15.0" />
                            </font>
                         </Label>
+                        <Label text="Kiadott AdBlue mennyiség" GridPane.rowIndex="6" />
+                        <Label fx:id="lblAdBlue" text="0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Label>
                      </children>
                   </GridPane>
+                  <LineChart fx:id="chartTank" createSymbols="false" legendSide="RIGHT" legendVisible="false" style="-fx-background: transparent;" title="Napi zárások">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis label="liter" side="LEFT" />
+                    </yAxis>
+                  </LineChart>
                </children>
             </HBox>
          </children>
@@ -110,6 +144,7 @@
             <TableColumn fx:id="refuelQuantityColumn" prefWidth="150.0" styleClass="double-column" text="Tankolt mennyiség" />
             <TableColumn fx:id="distanceColumn" prefWidth="150.0" styleClass="integer-column" text="Megtett km" />
             <TableColumn fx:id="averageConsumptionColumn" prefWidth="150.0" styleClass="double-column" text="Átlag fogyasztás" />
+            <TableColumn fx:id="amountColumn" prefWidth="150.0" styleClass="double-column" text="Összeg" />
          </columns>
       </TableView>
    </children>
