@@ -13,6 +13,7 @@ import application.entity.Refueling;
 import application.entity.TableStatementData;
 import application.entity.Tank;
 import application.entity.TankReFill;
+import application.pdf.PdfStatement;
 import application.util.ChartTankStatement;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.KnobType;
@@ -50,7 +51,7 @@ public class StatementPaneController implements Initializable {
 	private List<TankReFill> tankReFills;
 	private List<Refueling> refuelings;
 	private DecimalFormat df = new DecimalFormat("#,##0.00");
-	private static Tank tank;
+	private int tankFullCapcity;
 	private Gauge gaugeStart;
 	private Gauge gaugeEnd;
 
@@ -65,6 +66,9 @@ public class StatementPaneController implements Initializable {
 
 	@FXML
 	private Button btnLoad;
+
+	@FXML
+	private Button btnDownload;
 
 	@FXML
 	private Label lblOpenQuantity;
@@ -83,15 +87,15 @@ public class StatementPaneController implements Initializable {
 
 	@FXML
 	private Label lblCurrentQuantity;
-	
-    @FXML
-    private Label lblAdBlue;
-    
-    @FXML
-    private VBox vBoxDashboardStart;
-    
-    @FXML
-    private VBox vBoxDashboardEnd;
+
+	@FXML
+	private Label lblAdBlue;
+
+	@FXML
+	private VBox vBoxDashboardStart;
+
+	@FXML
+	private VBox vBoxDashboardEnd;
 
 	@FXML
 	private LineChart<String, Number> chartTank;
@@ -122,7 +126,7 @@ public class StatementPaneController implements Initializable {
 
 	@FXML
 	private TableColumn<TableStatementData, Double> averageConsumptionColumn;
-	
+
 	@FXML
 	private TableColumn<TableStatementData, String> amountColumn;
 
@@ -134,12 +138,12 @@ public class StatementPaneController implements Initializable {
 		setDasboardSkins();
 	}
 
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.machines = MainFrameController.getMachines();
 		this.refuelings = MainFrameController.getRefuelings();
 		this.tankReFills = MainFrameController.getTankReFills();
+		this.tankFullCapcity = Tank.getFullCapacity();
 		setDatePickers();
 		calculateStatementDatas();
 		fillTableStatementDate();
@@ -148,7 +152,6 @@ public class StatementPaneController implements Initializable {
 		setDasboardSkins();
 
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public void fillTableStatementDate() {
@@ -164,7 +167,7 @@ public class StatementPaneController implements Initializable {
 						machine.isPrivateVehicle() ? "magán" : "céges",
 						machine.isHourlyConsumption() ? "üzemóra" : "km", calculateRefuelQuantity(id),
 						calculateDistance(id), calculateAverageConsumption(id, machine.isHourlyConsumption()),
-						df.format(calculateAmount(id))+" Ft"));
+						df.format(calculateAmount(id)) + " Ft"));
 			}
 		}
 
@@ -184,7 +187,7 @@ public class StatementPaneController implements Initializable {
 
 		averageConsumptionColumn
 				.setCellValueFactory(cellData -> cellData.getValue().getAverageConsumption().asObject());
-		
+
 		amountColumn.setCellValueFactory(cellData -> cellData.getValue().getAmountColumn());
 
 		tableStatement.getColumns().addAll(idColumn, licensePlateColumn, typeColumn, privateVehicleColumn,
@@ -268,8 +271,7 @@ public class StatementPaneController implements Initializable {
 	private double getAllAdBlueQauntity() {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
-		return refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+		return refuelings.stream().filter(x -> !x.isDeleted()).filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
 				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(Refueling::getAdBlue).sum();
 	}
 
@@ -296,6 +298,7 @@ public class StatementPaneController implements Initializable {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
 		double refuels = refuelings.stream().filter(x -> !x.isDeleted())
+				.filter(x -> x.getTankId() == 1)
 				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
 				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).mapToDouble(Refueling::getQuantity).sum();
 		return refuels;
@@ -321,60 +324,44 @@ public class StatementPaneController implements Initializable {
 			LocalDate startDate = dpStartDate.getValue();
 			LocalDate endDate = dpEndDate.getValue();
 			Map<LocalDate, Double> tankLevels = new ChartTankStatement(startDate, endDate).getTankLevelsForChart();
-			
 
 			XYChart.Series<String, Number> series = new XYChart.Series<>();
 			series.setName("Tank");
 
 			for (Map.Entry<LocalDate, Double> entry : tankLevels.entrySet()) {
-				String day =  (entry.getKey()+"").replace("-", "").substring(2, 8);
+				String day = (entry.getKey() + "").replace("-", "").substring(2, 8);
 				series.getData().add(new XYChart.Data<>(day, entry.getValue()));
 			}
 
 			chartTank.getData().add(series);
 		} catch (Exception e) {
 			System.out.println(e);
-		}		
+		}
 	}
-	
 
 	private void createDasboardSkins() {
-		gaugeStart = GaugeBuilder.create()
-			                  .skinType(SkinType.DASHBOARD)
-			                  .prefSize(150,150)
-			                  .barColor(Color.rgb(243, 98, 45))
-			                  .title("")
-			                  .unit("liter")
-			                  .unitColor(Color.BLACK)
-			                  .valueColor(Color.BLACK)
-			                  .decimals(0)
-			                  .minValue(0)
-			                  .maxValue(1200)
-			                  .animated(true)
-			                  .animationDuration(500)
-			                  .build();
+		gaugeStart = GaugeBuilder.create().skinType(SkinType.DASHBOARD).prefSize(150, 150)
+				.barColor(Color.rgb(243, 98, 45)).title("").unit("liter").unitColor(Color.BLACK).valueColor(Color.BLACK)
+				.decimals(0).minValue(0).maxValue(tankFullCapcity).animated(true).animationDuration(500).build();
 		vBoxDashboardStart.getChildren().add(gaugeStart);
-		
-		gaugeEnd = GaugeBuilder.create()
-                .skinType(SkinType.DASHBOARD)
-                .prefSize(150,150)
-                .barColor(Color.rgb(243, 98, 45))
-                .title("")
-                .unit("liter")
-                .unitColor(Color.BLACK)
-                .valueColor(Color.BLACK)
-                .decimals(0)
-                .minValue(0)
-                .maxValue(1200)
-                .animated(true)
-                .animationDuration(500)
-                .build();
+
+		gaugeEnd = GaugeBuilder.create().skinType(SkinType.DASHBOARD).prefSize(150, 150)
+				.barColor(Color.rgb(243, 98, 45)).title("").unit("liter").unitColor(Color.BLACK).valueColor(Color.BLACK)
+				.decimals(0).minValue(0).maxValue(tankFullCapcity).animated(true).animationDuration(500).build();
 		vBoxDashboardEnd.getChildren().add(gaugeEnd);
 	}
 
-	
 	private void setDasboardSkins() {
-			gaugeStart.setValue(getTankStartLevel());
-			gaugeEnd.setValue(getTankEndLevel());
+		gaugeStart.setValue(getTankStartLevel());
+		gaugeEnd.setValue(getTankEndLevel());
+	}
+
+	@FXML
+	void downloadTable(ActionEvent event) {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		PdfStatement pdfsObj = new PdfStatement(startDate,endDate, getTankStartLevel());
+		String fileName = startDate + " - " + endDate + " napi zárások";
+		pdfsObj.createPdf(fileName);
 	}
 }

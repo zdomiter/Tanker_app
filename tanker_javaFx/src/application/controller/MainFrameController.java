@@ -120,16 +120,15 @@ public class MainFrameController implements Initializable {
 	}
 
 	public static void loadTank() {
-		tank = new Tank(1200);
+		tank = new Tank(1100);
 		for (TankReFill tankReFill : tankReFills) {
 			if (!tankReFill.isDeleted()) {
 				tank.fillTank(tankReFill.getQuantity(), tankReFill.getPrice());
 			}
 		}
-		int tankId = tankCards.stream().filter(t -> t.getCompany().equals("Tartály")).findFirst().orElse(null).getId();
 
 		for (Refueling refueling : refuelings) {
-			if (!refueling.isDeleted() && refueling.getTankId() == tankId) {
+			if (!refueling.isDeleted() && refueling.getTankId() == 1) {
 				refueling.setFuelPrice(tank.refuelFromTank(refueling.getQuantity()));
 				refueling.setAmount();
 			}

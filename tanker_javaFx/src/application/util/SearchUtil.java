@@ -28,6 +28,11 @@ public class SearchUtil {
 		Machine machine = machines.stream().filter(m -> m.getId() == id).findFirst().orElse(null);
 		return machine.getLicensePlate();
 	}
+	
+	public String getMachineTypeById(List<Machine> machines, int id) {
+		Machine machine = machines.stream().filter(m -> m.getId() == id).findFirst().orElse(null);
+		return machine.getType();
+	}
 
 	public String getTankCardCompanyById(List<TankCard> tankCards, int id) {
 		TankCard tankCard = tankCards.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
@@ -77,5 +82,11 @@ public class SearchUtil {
 		return tankReFills.stream().filter(x->x.getId()==id).findFirst().get();
 	}
 
-
+	public int findRefuelingIndexById(List<Refueling> list, int id) {
+		return list.stream().filter(x -> x.getId()==id).mapToInt(list::indexOf).findFirst().orElse(-1);
+	}
+	
+	public int findTankReFillIndexById(List<TankReFill> list, int id) {
+		return list.stream().filter(x -> x.getId()==id).mapToInt(list::indexOf).findFirst().orElse(-1);
+	}
 }

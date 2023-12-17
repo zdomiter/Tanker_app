@@ -97,8 +97,8 @@ public class MachineUpdateFrameController implements Initializable {
 	@FXML
 	void updateMachine(ActionEvent event) {
 		if (filledAllTextField()) {
-			machines.get(machineId - 1).updateMachine(tfLicensePlate.getText(),
-					Integer.parseInt(tfStartMileage.getText()), tfType.getText(), cbPrivateVehicle.isSelected(),
+			machines.get(machineId - 1).updateMachine(stringFormatter(tfLicensePlate.getText()),
+					Integer.parseInt(tfStartMileage.getText()), stringFormatter(tfType.getText()), cbPrivateVehicle.isSelected(),
 					cbHourlyConsumption.isSelected());
 			FileHandler fhObj = new FileHandler();
 			fhObj.writeMachinesToFile(machines);
@@ -150,6 +150,11 @@ public class MachineUpdateFrameController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.machines = MainFrameController.getMachines();
+	}
+	
+	private String stringFormatter(String text) {
+		text = text.replace(";", ",");
+		return text.equals("") ? "0" : text;
 	}
 
 }

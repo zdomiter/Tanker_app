@@ -243,7 +243,9 @@ public class RefuelingPaneController implements Initializable {
 	public void comboBoxMachineFilterFillData() {
 		ObservableList<String> items = FXCollections.observableArrayList("Mind");
 		for (Machine machine : machines) {
-			items.add(machine.getLicensePlate());
+			if (!machine.isDeleted()) {
+				items.add(machine.getLicensePlate());
+			}
 		}
 		cmbMachine.setItems(items);
 		cmbMachine.getSelectionModel().select(0);
@@ -252,7 +254,8 @@ public class RefuelingPaneController implements Initializable {
 
 	public void comboBoxYearFilterFillData() {
 		ObservableList<String> distinctYears = FXCollections.observableArrayList("Mind");
-		distinctYears.addAll(refuelings.stream().map(Refueling::getDate).map(date -> String.valueOf(date.getYear()))
+		distinctYears.addAll(refuelings.stream().filter(x -> !x.isDeleted())
+				.map(Refueling::getDate).map(date -> String.valueOf(date.getYear()))
 				.distinct().sorted().collect(Collectors.toList()));
 		cmbYear.setItems(distinctYears);
 		cmbYear.getSelectionModel().selectLast();

@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -87,7 +89,7 @@ public class TankReFillUpdateFrameController implements Initializable{
     void delete(ActionEvent event) {
     	if (alertMessage.isConfirmedDelete()) {
     		String todayStr = LocalDate.now().toString();
-    		tankReFills.get(tankReFillId-1).deleteTankReFill(true, todayStr);
+    		tankReFills.get(srcUtilObj.findTankReFillIndexById(tankReFills, tankReFillId)).deleteTankReFill(true, todayStr);
     		FileHandler fhObj = new FileHandler();
     		fhObj.writeTankReFillsToFile(tankReFills);
     		tank.refuelFromTank(selectedTankReFill.getQuantity());
@@ -136,16 +138,23 @@ public class TankReFillUpdateFrameController implements Initializable{
 	private boolean isValidInput(String character) {
 		return character.matches("[0-9,]");
 	}
+	
+	private String stringFormatter(String text) {
+		text = text.replace(";", ",");
+		return text.equals("") ? "0" : text;
+	}
 
     @FXML
     void saveUpdateTankReFill(ActionEvent event) {
     	if (checkTextFieldFilled()) {
 			try {
-				tankReFills.get(tankReFillId-1).updateTankReFill(dpDate.getValue(),
+				tankReFills.get(srcUtilObj.findTankReFillIndexById(tankReFills, tankReFillId)).updateTankReFill(dpDate.getValue(),
 						doubleNumberFormater(tfQuantity.getText()),
 						doubleNumberFormater(tfPrice.getText()),
 						tfCompany.getText(), 
-						tfNote.getText());
+						stringFormatter(tfNote.getText()));
+				Collections.sort(tankReFills, Comparator.comparing(TankReFill::getDate));
+				
 				FileHandler fhObj = new FileHandler();
 				fhObj.writeTankReFillsToFile(tankReFills);
 				

@@ -84,9 +84,9 @@ public class MachineNewFrameController implements Initializable{
     @FXML
     void saveNewMachine(ActionEvent event) {
     	if (filledAllTextField()) {
-			machines.add(new Machine(machines.size()+1, tfLicensePlate.getText(), 
+			machines.add(new Machine(machines.size()+1, stringFormatter(tfLicensePlate.getText()), 
 					tfStartMileage.getText().isEmpty() ? 0 : Integer.parseInt(tfStartMileage.getText()), 
-					tfType.getText(), cbPrivateVehicle.isSelected(), 
+					stringFormatter(tfType.getText()), cbPrivateVehicle.isSelected(), 
 					cbHourlyConsumption.isSelected(), false, null));
 			FileHandler fhObj = new FileHandler();
 			fhObj.writeMachinesToFile(machines);
@@ -113,6 +113,10 @@ public class MachineNewFrameController implements Initializable{
 		
 	}
 
+	private String stringFormatter(String text) {
+		text = text.replace(";", ",");
+		return text.equals("") ? "0" : text;
+	}
 
 }
 

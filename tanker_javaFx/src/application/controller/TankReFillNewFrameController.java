@@ -4,11 +4,14 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import application.alert.AlertMessage;
+import application.entity.Refueling;
 import application.entity.Tank;
 import application.entity.TankReFill;
 import application.util.FileHandler;
@@ -68,7 +71,9 @@ public class TankReFillNewFrameController implements Initializable {
 				tankReFills.add(new TankReFill(tankReFills.size() + 1,
 						dpDate.getValue(), doubleNumberFormater(tfQuantity.getText()),
 						doubleNumberFormater(tfPrice.getText()), tfCompany.getText(),
-						tfNote.getText(), false, null));
+						stringFormatter(tfNote.getText()), false, null));
+				Collections.sort(tankReFills, Comparator.comparing(TankReFill::getDate));
+				
 				FileHandler fhObj = new FileHandler();
 				fhObj.writeTankReFillsToFile(tankReFills);
 				tank.fillTank(doubleNumberFormater(tfQuantity.getText()), doubleNumberFormater(tfPrice.getText()));
@@ -120,6 +125,10 @@ public class TankReFillNewFrameController implements Initializable {
 
 	private boolean isValidInput(String character) {
 		return character.matches("[0-9,]");
+	}
+	private String stringFormatter(String text) {
+		text = text.replace(";", ",");
+		return text.equals("") ? "0" : text;
 	}
 
 	@Override

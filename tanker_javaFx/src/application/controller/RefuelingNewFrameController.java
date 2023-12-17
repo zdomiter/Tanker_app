@@ -4,6 +4,8 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -110,6 +112,7 @@ public class RefuelingNewFrameController implements Initializable {
 			tfPrice.setEditable(false);
 		} else {
 			tfPrice.setEditable(true);
+			tfPrice.setText("");
 		}
 
 	}
@@ -117,7 +120,9 @@ public class RefuelingNewFrameController implements Initializable {
 	public void comboBoxMachineFillData() {
 		ObservableList<String> items = FXCollections.observableArrayList("Válassz!");
 		for (Machine machine : machines) {
-			items.add(machine.getLicensePlate());
+			if (!machine.isDeleted()) {
+				items.add(machine.getLicensePlate());
+			}
 		}
 		cmbMachine.setItems(items);
 		cmbMachine.getSelectionModel().select(0);
@@ -127,19 +132,25 @@ public class RefuelingNewFrameController implements Initializable {
 	public void comboBoxTankCardFillData() {
 		ObservableList<String> items = FXCollections.observableArrayList();
 		for (TankCard tankCard : tankCards) {
-			items.add(tankCard.getCompany());
-			cmbTankCard.setItems(items);
-			cmbTankCard.getSelectionModel().select(0);
+			if (!tankCard.isDeleted()) {
+				items.add(tankCard.getCompany());
+			}
 		}
+		cmbTankCard.setItems(items);
+		cmbTankCard.getSelectionModel().select(0);
 	}
 
 	@FXML
 	void textChanged(Event event) {
 		calculateDistance();
 		calculateAverageFuelConsumption();
-		setPriceLabelText();
 		setAmountLabelText();
 		configureLabelsForPrivateVehicle();
+	}
+	
+	@FXML
+	void tankCardChanged(ActionEvent event) {
+		setPriceLabelText();
 	}
 
 	private void configureLabelsForPrivateVehicle() {
@@ -180,8 +191,11 @@ public class RefuelingNewFrameController implements Initializable {
 		if (!lblCalculateDistance.getText().equals("0") && !tfQuantity.getText().isEmpty() && cbFull.isSelected()) {
 			double distance = doubleNumberFormater(lblCalculateDistance.getText());
 			double quantity = doubleNumberFormater(tfQuantity.getText());
-			String averageFuel = df.format(quantity / (distance / 100));
-			lblCalculateAverageFuelConsumption.setText(averageFuel);
+			double averageFuel = quantity / (distance / 100);
+			if (isHourlyConsumption(new SearchUtil().getMachineIdByLicensePlate(machines, cmbMachine.getValue()))) {
+				averageFuel = averageFuel/100;
+			}
+			lblCalculateAverageFuelConsumption.setText(df.format(averageFuel));
 		} else {
 			lblCalculateAverageFuelConsumption.setText("0");
 		}
@@ -225,6 +239,8 @@ public class RefuelingNewFrameController implements Initializable {
 				refuelings.add(new Refueling(refuelings.size() + 1, dpDate.getValue(), machineId, tankCardId, quantity,
 						amount, mileage, price, stringFormatter(tfNote.getText()),
 						cbFull.isSelected(), adBlue, false, null));
+				
+				Collections.sort(refuelings, Comparator.comparing(Refueling::getDate));
 
 				FileHandler fhObj = new FileHandler();
 				fhObj.writeRefuelingsToFile(refuelings);
@@ -232,7 +248,9 @@ public class RefuelingNewFrameController implements Initializable {
 				Stage stage = (Stage) btnSave.getScene().getWindow();
 				stage.close();
 
+				refuelingPaneController.comboBoxYearFilterFillData();
 				refuelingPaneController.fillTableData();
+				
 				MainFrameController.setGaugeLevelValue();
 
 			} catch (Exception e) {
@@ -242,6 +260,7 @@ public class RefuelingNewFrameController implements Initializable {
 	}
 
 	private String stringFormatter(String text) {
+		text = text.replace(";", ",");
 		return text.equals("") ? "0" : text;
 	}
 
@@ -290,6 +309,10 @@ public class RefuelingNewFrameController implements Initializable {
 
 	private boolean isValidIntInput(String character) {
 		return character.matches("[0-9]");
+	}
+	private boolean isHourlyConsumption(int machineId) {
+		return machines.stream().filter(x -> x.getId() == machineId).findFirst().map(Machine::isHourlyConsumption)
+				.orElse(false);
 	}
 
 }

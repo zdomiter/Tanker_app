@@ -39,4 +39,10 @@ public class AlertMessage {
 		Optional<ButtonType> action = a.showAndWait();
 		return action.get() == ButtonType.OK ? true : false;
 	}
+	
+	public void successDownload() {
+		Alert a = new Alert(AlertType.NONE, "A kimutatás pdf elkészült!", ButtonType.OK);
+		a.setTitle("Letöltések mappában");
+		a.show();
+	}
 }

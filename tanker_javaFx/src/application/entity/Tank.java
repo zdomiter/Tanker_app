@@ -5,11 +5,11 @@ import java.util.LinkedList;
 public class Tank {
 
 	private LinkedList<TankReFill> tankReFills;
-	private int fullCapacity;
+	private static int fullCapacity;
 
 	public Tank(int fullCapacity) {
 		this.tankReFills = new LinkedList<>();
-		this.fullCapacity = fullCapacity;
+		Tank.fullCapacity = fullCapacity;
 	}
 
 	public void fillTank(double quantity, double price) {
@@ -21,7 +21,7 @@ public class Tank {
 		return tankReFills.stream().mapToDouble(x->x.getQuantity()).sum();
 	}
 	
-	public int getFullCapacity() {
+	public static int getFullCapacity() {
 		return fullCapacity;
 	}
 	
@@ -30,13 +30,8 @@ public class Tank {
 }
 
 	public double getPrice() {
-		return tankReFills.getFirst().getPrice();
-		
+		return tankReFills.getFirst().getPrice();	
 	}
-//	public String getDataRowToFile() {
-//		return fullCapacity + ";" + tankQauntityLiter + ";" + avgPrice;
-//	}
-
 
 	public double refuelFromTank(double quantity) {
     	double restQuantity= quantity;
