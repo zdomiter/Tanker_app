@@ -15,6 +15,7 @@ import application.entity.Tank;
 import application.entity.TankReFill;
 import application.pdf.PdfStatement;
 import application.util.ChartTankStatement;
+import application.util.SearchUtil;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.KnobType;
 import eu.hansolo.medusa.Gauge.LedType;
@@ -205,29 +206,57 @@ public class StatementPaneController implements Initializable {
 	}
 
 	private double calculateAverageConsumption(int id, boolean isHourlyConsumption) {
-		double quantity = calculateRefuelQuantity(id);
-		int distance = calculateDistance(id);
-		if (distance != 0) {
-			double avg = quantity / distance;
-			if (!isHourlyConsumption) {
-				avg = avg * 100;
+		if (isFullTheLastRefueling(id)) {
+			double quantity = calculateRefuelQuantity(id);
+			int distance = calculateDistance(id);
+			if (distance != 0) {
+				double avg = quantity / distance;
+				if (!isHourlyConsumption) {
+					avg = avg * 100;
+				}
+				return (double) (Math.round(avg * 100)) / 100;
+			} else {
+				return 0;
 			}
-			return (double) (Math.round(avg * 100)) / 100;
-		} else {
-			return 0;
+		}else {
+			return -1;
+		}
+		
+	}
+	
+	private boolean isFullTheLastRefueling(int id) {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		Refueling lastRefueling = refuelings.stream().filter(x -> !x.isDeleted())
+				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
+				.filter(x -> x.getMachineId() == id)
+				.max(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
+		if (lastRefueling!=null) {
+			return lastRefueling.isFull();
+		}else {
+			return true;
 		}
 	}
 
 	private int calculateDistance(int id) {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
-		int startMileage = refuelings.stream().filter(x -> !x.isDeleted())
+		Refueling firstRefueling = refuelings.stream().filter(x -> !x.isDeleted())
 				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
-				.mapToInt(Refueling::getMileage).min().orElse(0);
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
+				.filter(x -> x.getMachineId() == id)
+				.min(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
+		int startMileage = 0;
+		if (firstRefueling!=null) {
+			SearchUtil srcObj = new SearchUtil();
+			startMileage = srcObj.getPreviousMileage(refuelings, machines, firstRefueling);
+		}		
+		
 		int endMileage = refuelings.stream().filter(x -> !x.isDeleted())
 				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1))).filter(x -> x.getMachineId() == id)
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
+				.filter(x -> x.getMachineId() == id)
 				.mapToInt(Refueling::getMileage).max().orElse(0);
 		return endMileage - startMileage;
 	}

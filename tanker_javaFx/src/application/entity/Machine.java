@@ -14,7 +14,6 @@ public class Machine {
 
 	public Machine(int id, String licensePlate, int startMileage, String type, boolean privateVehicle,
 			boolean hourlyConsumption, boolean deleted, String delDate) {
-		super();
 		this.id = id;
 		this.licensePlate = licensePlate;
 		this.startMileage = startMileage;
@@ -23,6 +22,11 @@ public class Machine {
 		this.hourlyConsumption = hourlyConsumption;
 		this.deleted = deleted;
 		this.delDate = delDate;
+	}
+	
+	public Machine(int id, String licensePlate) {
+		this.id = id;
+		this.licensePlate = licensePlate;
 	}
 
 	public int getId() {
@@ -73,9 +77,11 @@ public class Machine {
 
 	@Override
 	public String toString() {
-		return "Machine [id=" + id + ", licensePlate=" + licensePlate + ", startMileage=" + startMileage + ", type="
-				+ type + ", privateVehicle=" + privateVehicle + ", hourlyConsumption=" + hourlyConsumption
-				+ ", deleted=" + deleted + ", delDate=" + delDate + "]";
+		if (type==null) {
+			return licensePlate;
+		}else {
+			return licensePlate + " " + type;
+		}
 	}
 
 	public String getDataRowToFile() {

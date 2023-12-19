@@ -62,7 +62,7 @@ public class RefuelingNewFrameController implements Initializable {
 	private TextField tfPrice;
 
 	@FXML
-	public ComboBox<String> cmbMachine;
+	public ComboBox<Machine> cmbMachine;
 
 	@FXML
 	public ComboBox<String> cmbTankCard;
@@ -118,15 +118,15 @@ public class RefuelingNewFrameController implements Initializable {
 	}
 
 	public void comboBoxMachineFillData() {
-		ObservableList<String> items = FXCollections.observableArrayList("Válassz!");
+		ObservableList<Machine> items = FXCollections.observableArrayList();
+		items.add(new Machine(0, "Válassz!"));
 		for (Machine machine : machines) {
 			if (!machine.isDeleted()) {
-				items.add(machine.getLicensePlate());
+				items.add(machine);
 			}
 		}
 		cmbMachine.setItems(items);
 		cmbMachine.getSelectionModel().select(0);
-
 	}
 
 	public void comboBoxTankCardFillData() {
@@ -154,9 +154,8 @@ public class RefuelingNewFrameController implements Initializable {
 	}
 
 	private void configureLabelsForPrivateVehicle() {
-		if (!cmbMachine.getValue().equals("Válassz!")) {
-			if (srcUtilObj.isPrivateVehicleByLicencePlate(machines, cmbMachine.getValue())) {
-				lblMileage.setText("km/óra állás:");
+		if (cmbMachine.getSelectionModel().getSelectedIndex()!=0) {
+			if (cmbMachine.getValue().isPrivateVehicle()) {
 				tfMileAge.setPromptText("Nem kötelező");
 			} else {
 				lblMileage.setText("km/óra állás:*");
@@ -176,8 +175,8 @@ public class RefuelingNewFrameController implements Initializable {
 	}
 
 	private void calculateDistance() {
-		if (!cmbMachine.getValue().equals("Válassz!") && !tfMileAge.getText().equals("")) {
-			int preMileage = srcUtilObj.getLastMileageByLicensePlate(refuelings, machines, cmbMachine.getValue());
+		if (cmbMachine.getSelectionModel().getSelectedIndex()!=0 && !tfMileAge.getText().equals("")) {
+			int preMileage = srcUtilObj.getLastMileageByLicensePlate(refuelings, machines, cmbMachine.getValue().getLicensePlate());
 			int currentMileage = Integer.parseInt(tfMileAge.getText());
 			if (currentMileage > preMileage) {
 				lblCalculateDistance.setText(currentMileage - preMileage + "");
@@ -192,7 +191,7 @@ public class RefuelingNewFrameController implements Initializable {
 			double distance = doubleNumberFormater(lblCalculateDistance.getText());
 			double quantity = doubleNumberFormater(tfQuantity.getText());
 			double averageFuel = quantity / (distance / 100);
-			if (isHourlyConsumption(new SearchUtil().getMachineIdByLicensePlate(machines, cmbMachine.getValue()))) {
+			if (cmbMachine.getValue().isHourlyConsumption()) {
 				averageFuel = averageFuel/100;
 			}
 			lblCalculateAverageFuelConsumption.setText(df.format(averageFuel));
@@ -224,7 +223,7 @@ public class RefuelingNewFrameController implements Initializable {
 	public void saveNewRefueling(ActionEvent event) {
 		if (checkTextFieldFilled()) {
 			try {
-				int machineId = srcUtilObj.getMachineIdByLicensePlate(machines, cmbMachine.getValue());
+				int machineId = cmbMachine.getValue().getId();
 				int tankCardId = srcUtilObj.getTankCardIdByCompany(tankCards, cmbTankCard.getValue());
 				double price = tfPrice.getText().isEmpty() ? 0.0 : doubleNumberFormater(tfPrice.getText());
 				double adBlue = tfAdBlue.getText().isEmpty() ? 0.0 : doubleNumberFormater(tfAdBlue.getText());
@@ -269,8 +268,8 @@ public class RefuelingNewFrameController implements Initializable {
 		if (dpDate.getValue() == null) {
 			filled = false;
 		}
-		if (!cmbMachine.getValue().equals("Válassz!")) {
-			if (!srcUtilObj.isPrivateVehicleByLicencePlate(machines, cmbMachine.getValue())) {
+		if (cmbMachine.getSelectionModel().getSelectedIndex()!=0) {
+			if (!cmbMachine.getValue().isPrivateVehicle()) {
 				if (tfMileAge.getText().isEmpty() || doubleNumberFormater(tfMileAge.getText()) <= 0) {
 					filled = false;
 				}
@@ -309,10 +308,6 @@ public class RefuelingNewFrameController implements Initializable {
 
 	private boolean isValidIntInput(String character) {
 		return character.matches("[0-9]");
-	}
-	private boolean isHourlyConsumption(int machineId) {
-		return machines.stream().filter(x -> x.getId() == machineId).findFirst().map(Machine::isHourlyConsumption)
-				.orElse(false);
 	}
 
 }

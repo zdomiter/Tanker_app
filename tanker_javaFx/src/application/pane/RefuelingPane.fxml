@@ -29,7 +29,7 @@
 				<VBox alignment="CENTER" spacing="10.0">
 					<children>
 						<Label text="Jármű kiválasztás" />
-						<ComboBox fx:id="cmbMachine" prefHeight="31.0" prefWidth="200.0" styleClass="combo-box" />
+						<ComboBox fx:id="cmbMachine" prefHeight="31.0" prefWidth="200.0" promptText="Mind" styleClass="combo-box" />
 					</children>
 				</VBox>
 				<VBox alignment="CENTER" spacing="10.0">

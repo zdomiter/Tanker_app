@@ -47,7 +47,7 @@ public class RefuelingPaneController implements Initializable {
 	private Button btnFilterRefueling;
 
 	@FXML
-	private ComboBox<String> cmbMachine;
+	private ComboBox<Machine> cmbMachine;
 
 	@FXML
 	private ComboBox<String> cmbYear;
@@ -185,10 +185,7 @@ public class RefuelingPaneController implements Initializable {
 
 	private boolean filterWithTable(Refueling refueling) {
 		boolean filter = false;
-		int selectedMachineId = machines.stream()
-				.filter(machine -> machine.getLicensePlate().equals(cmbMachine.getValue())).map(Machine::getId)
-				.findFirst().orElse(0);
-
+		int selectedMachineId = cmbMachine.getValue().getId();
 		String SelectedYear = cmbYear.getValue();
 
 		if (!refueling.isDeleted() && (selectedMachineId == refueling.getMachineId() || selectedMachineId == 0)
@@ -241,15 +238,15 @@ public class RefuelingPaneController implements Initializable {
 	}
 
 	public void comboBoxMachineFilterFillData() {
-		ObservableList<String> items = FXCollections.observableArrayList("Mind");
+		ObservableList<Machine> items = FXCollections.observableArrayList();
+		items.add(new Machine(0, "Mind"));
 		for (Machine machine : machines) {
 			if (!machine.isDeleted()) {
-				items.add(machine.getLicensePlate());
+				items.add(machine);
 			}
 		}
 		cmbMachine.setItems(items);
 		cmbMachine.getSelectionModel().select(0);
-
 	}
 
 	public void comboBoxYearFilterFillData() {
