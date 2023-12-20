@@ -206,7 +206,7 @@ public class StatementPaneController implements Initializable {
 	}
 
 	private double calculateAverageConsumption(int id, boolean isHourlyConsumption) {
-		if (isFullTheLastRefueling(id)) {
+		if (isFullFirstAndLastRefueling(id)) {
 			double quantity = calculateRefuelQuantity(id);
 			int distance = calculateDistance(id);
 			if (distance != 0) {
@@ -224,7 +224,8 @@ public class StatementPaneController implements Initializable {
 		
 	}
 	
-	private boolean isFullTheLastRefueling(int id) {
+	private boolean isFullFirstAndLastRefueling(int id) {
+		boolean isFull = true;
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
 		Refueling lastRefueling = refuelings.stream().filter(x -> !x.isDeleted())
@@ -232,25 +233,38 @@ public class StatementPaneController implements Initializable {
 				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
 				.filter(x -> x.getMachineId() == id)
 				.max(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
-		if (lastRefueling!=null) {
-			return lastRefueling.isFull();
-		}else {
-			return true;
+		
+		if (lastRefueling!=null && !lastRefueling.isFull()) {
+			isFull = false;
 		}
+		Refueling preFirstRefueling = refuelings.stream().filter(x -> !x.isDeleted())
+				.filter(x -> x.getDate().isBefore(startDate))
+				.filter(x -> x.getMachineId() == id)
+				.max(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
+		if (preFirstRefueling!=null && !preFirstRefueling.isFull()) {
+			isFull = false;
+		}	
+		return isFull;
+	}
+	
+	private Refueling firstRefueling(int id) {
+		LocalDate startDate = dpStartDate.getValue();
+		LocalDate endDate = dpEndDate.getValue();
+		return refuelings.stream().filter(x -> !x.isDeleted())
+				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
+				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
+				.filter(x -> x.getMachineId() == id)
+				.min(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
 	}
 
 	private int calculateDistance(int id) {
 		LocalDate startDate = dpStartDate.getValue();
 		LocalDate endDate = dpEndDate.getValue();
-		Refueling firstRefueling = refuelings.stream().filter(x -> !x.isDeleted())
-				.filter(x -> x.getDate().isAfter(startDate.minusDays(1)))
-				.filter(x -> x.getDate().isBefore(endDate.plusDays(1)))
-				.filter(x -> x.getMachineId() == id)
-				.min(java.util.Comparator.comparingInt(Refueling::getMileage)).orElse(null);
+		
 		int startMileage = 0;
-		if (firstRefueling!=null) {
+		if (firstRefueling(id)!=null) {
 			SearchUtil srcObj = new SearchUtil();
-			startMileage = srcObj.getPreviousMileage(refuelings, machines, firstRefueling);
+			startMileage = srcObj.getPreviousMileage(refuelings, machines, firstRefueling(id));
 		}		
 		
 		int endMileage = refuelings.stream().filter(x -> !x.isDeleted())
