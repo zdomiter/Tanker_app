@@ -9,19 +9,19 @@ The application was built as a practice project. Its user interface is in Hungar
 ## Screenshots
 
 <p align="center">
-  <img src="tanker_javaFx/docs/screenshots/refuelings.png" alt="Refuelings page" width="800">
+  <img src="tanker_javaFx/doc/screenshots/refuelings.png" alt="Refuelings page" width="800">
   <br>
   <em>Refuelings list with vehicle and year filters, and the tank level gauge in the side menu</em>
 </p>
 
 <p align="center">
-  <img src="tanker_javaFx/docs/screenshots/edit-refueling.png" alt="Editing a refueling" width="600">
+  <img src="tanker_javaFx/doc/screenshots/edit-refueling.png" alt="Editing a refueling" width="600">
   <br>
   <em>Editing a refueling, with the calculated distance and average consumption</em>
 </p>
 
 <p align="center">
-  <img src="tanker_javaFx/docs/screenshots/statement.png" alt="Reports page" width="800">
+  <img src="tanker_javaFx/doc/screenshots/statement.png" alt="Reports page" width="800">
   <br>
   <em>Monthly report with tank balance, daily tank level chart and per-vehicle consumption</em>
 </p>
