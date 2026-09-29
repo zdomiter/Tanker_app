@@ -9,19 +9,19 @@ Az alkalmazás gyakorló projektként készült. A felhasználói felület magya
 ## Képernyőképek
 
 <p align="center">
-  <img src="docs/screenshots/refuelings.png" alt="Tankolások oldal" width="800">
+  <img src="tanker_javaFx/doc/screenshots/refuelings.png" alt="Tankolások oldal" width="800">
   <br>
   <em>A tankolások listája jármű- és évszűrővel, az oldalsó menüben a tartály szintjelzőjével</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/edit-refueling.png" alt="Tankolás szerkesztése" width="600">
+  <img src="tanker_javaFx/doc/screenshots/edit-refueling.png" alt="Tankolás szerkesztése" width="600">
   <br>
   <em>Tankolás szerkesztése a kiszámolt megtett távolsággal és átlagfogyasztással</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/statement.png" alt="Kimutatások oldal" width="800">
+  <img src="tanker_javaFx/doc/screenshots/statement.png" alt="Kimutatások oldal" width="800">
   <br>
   <em>Havi kimutatás a tartálymérleggel, a napi tartályszint diagramjával és a járművenkénti fogyasztással</em>
 </p>
